@@ -1,0 +1,4 @@
+node_modules
+build
+migration_result.txt
+config.js
