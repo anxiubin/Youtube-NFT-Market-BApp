@@ -184,6 +184,14 @@ const App = {
       PRIVATE_KEY
     );
 
+    const estimatedGas = await yttContract.methods
+    .mintYTT(
+      videoId,
+      author,
+      dateCreated,
+      "https://ipfs.infura.io/ipfs/" + hash
+    ).estimateGas({from: sender.address})
+
     // using the promise
     const { rawTransaction: senderRawTransaction } =
       await cav.klay.accounts.signTransaction(
@@ -199,8 +207,8 @@ const App = {
               "https://ipfs.infura.io/ipfs/" + hash
             )
             .encodeABI(),
-          gas: "500000",
-          value: cav.utils.toPeb("0", "KLAY"), // payable 타입일때는 1
+          gas: Number.parseInt(estimatedGas * 1.2),
+          value: cav.utils.toPeb("0", "KLAY"), 
         },
         sender.privateKey
       );
@@ -329,15 +337,16 @@ const App = {
     tokens.append(template.html());
   },
 
-  approve: function () {
+  approve: async function () {
     this.showSpinner();
     const walletInstance = this.getWallet();
+    const estimatedGas = await yttContract.methods.setApprovalForAll(DEPLOYED_ADDRESS_TOKENSALES, true).estimateGas({from: walletInstance.address})
 
     yttContract.methods
       .setApprovalForAll(DEPLOYED_ADDRESS_TOKENSALES, true)
       .send({
         from: walletInstance.address,
-        gas: "250000",
+        gas: Number.parseInt(estimatedGas * 1.2),
       })
       .then(function (receipt) {
         if (receipt.transactionHash) {
@@ -349,12 +358,13 @@ const App = {
   cancelApproval: async function () {
     this.showSpinner();
     const walletInstance = this.getWallet();
+    const estimatedGas = await yttContract.methods.setApprovalForAll(DEPLOYED_ADDRESS_TOKENSALES, false).estimateGas({from: walletInstance.address})
 
     const receipt = await yttContract.methods
       .setApprovalForAll(DEPLOYED_ADDRESS_TOKENSALES, false)
       .send({
         from: walletInstance.address,
-        gas: "250000",
+        gas: Number.parseInt(estimatedGas * 1.2),
       });
     if (receipt.transactionHash) {
       await this.onCancelApprovalSuccess(walletInstance);
@@ -387,6 +397,9 @@ const App = {
       const feePayer = cav.klay.accounts.wallet.add(
         PRIVATE_KEY
       );
+      const estimatedGas = await tsContract.methods
+      .setForSale(tokenId, cav.utils.toPeb(amount, "KLAY")).estimateGas({from: sender.address})
+
 
       // using the promise
       const { rawTransaction: senderRawTransaction } =
@@ -398,7 +411,7 @@ const App = {
             data: tsContract.methods
               .setForSale(tokenId, cav.utils.toPeb(amount, "KLAY"))
               .encodeABI(),
-            gas: "500000",
+            gas: Number.parseInt(estimatedGas * 1.2),
             value: cav.utils.toPeb("0", "KLAY"), // payable 타입일때는 1
           },
           sender.privateKey
@@ -434,6 +447,7 @@ const App = {
       const feePayer = cav.klay.accounts.wallet.add(
         PRIVATE_KEY
       );
+      const estimatedGas = await tsContract.methods.purchaseToken(tokenId).estimateGas({from: sender.address, value: price,})
 
       // using the promise
       const { rawTransaction: senderRawTransaction } =
@@ -443,8 +457,8 @@ const App = {
             from: sender.address,
             to: DEPLOYED_ADDRESS_TOKENSALES,
             data: tsContract.methods.purchaseToken(tokenId).encodeABI(),
-            gas: "500000",
-            value: price, // payable 타입일때는 1
+            gas: Number.parseInt(estimatedGas * 1.2),
+            value: price,
           },
           sender.privateKey
         );
