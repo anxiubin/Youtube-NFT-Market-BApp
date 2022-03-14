@@ -1,15 +1,15 @@
-const HDWalletProvider = require("truffle-hdwallet-provider-klaytn");
-const NETWORK_ID = "1001";
-const GASLIMIT = "20000000";
+const HDWalletProvider = require('truffle-hdwallet-provider-klaytn');
+const NETWORK_ID = '1001';
+const GASLIMIT = '20000000';
 const URL = `https://api.baobab.klaytn.net:8651`;
-const PRIVATE_KEY = ""; //Klaytn Wallet private key 입력
+const PRIVATE_KEY = ''; //Klaytn Wallet private key 입력
 
 module.exports = {
   networks: {
     ganache: {
-      host: "localhost",
+      host: 'localhost',
       port: 8545,
-      network_id: "*", // Match any network id
+      network_id: '*', // Match any network id
     },
 
     klaytn: {
